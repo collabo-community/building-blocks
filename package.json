@@ -1,0 +1,28 @@
+{
+  "name": "building-blocks-scss",
+  "version": "1.0.0",
+  "description": "A basic library to transpile SCSS to CSS using Dart Sass",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run scss",
+    "scss": "sass --watch scss:css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/collabo-community/building-blocks.git"
+  },
+  "keywords": [
+    "css",
+    "scss",
+    "library"
+  ],
+  "author": "Akpan Abraham | Code Collabo Community",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/collabo-community/building-blocks/issues"
+  },
+  "homepage": "https://github.com/collabo-community/building-blocks#readme",
+  "dependencies": {
+    "sass": "^1.77.6"
+  }
+}

@@ -1,0 +1,13 @@
+.header {
+  background-color: #666666;
+  padding: 10px;
+}
+.header h1 {
+  font-size: 2rem;
+  color: white;
+}
+.header div {
+  background: green;
+}
+
+/*# sourceMappingURL=header.css.map */

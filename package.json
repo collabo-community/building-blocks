@@ -9,9 +9,6 @@
     "blocks:css:scss": "sass --watch --source-map @blocksCSS/scss:@blocksCSS/css",
     "blocks:css:watch-delete": "node @blocksCSS/watch-delete.js"
   },
-  "author": "Collabo Community",
-  "contributors": [],
-  "license": "",
   "dependencies": {
     "chokidar": "^3.6.0",
     "sass": "^1.77.6"
@@ -19,5 +16,16 @@
   "devDependencies": {
     "chalk": "^4.1.0",
     "npm-run-all": "^4.1.5"
-  }
+  },
+  "homepage": "https://github.com/collabo-community/building-blocks#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/collabo-community/building-blocks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/collabo-community/contributor-issue-report/issues?q=is%3Aissue+is%3Aopen+label%3A%22project%3A+building+blocks%22"
+  },
+  "author": "Collabo Community [Code Collabo]",
+  "license": "GNU AFFERO GENERAL PUBLIC LICENSE v3.0",
+  "contributors": []
 }

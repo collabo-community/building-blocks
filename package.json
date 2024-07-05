@@ -2,16 +2,22 @@
   "name": "@collabo-community/building-blocks",
   "version": "0.0.0",
   "description": "Building blocks",
-  "main": "src/server.ts",
+  "main": "",
   "scripts": {
-    "blocks:ts": ""
+    "blocks:ts": "",
+    "blocks:css": "npm-run-all --parallel blocks:css:scss blocks:css:watch-delete",
+    "blocks:css:scss": "sass --watch --source-map @blocksCSS/scss:@blocksCSS/css",
+    "blocks:css:watch-delete": "node @blocksCSS/watch-delete.js"
   },
   "author": "Collabo Community",
   "contributors": [],
-  "license": "ISC",
+  "license": "",
   "dependencies": {
+    "chokidar": "^3.6.0",
+    "sass": "^1.77.6"
   },
   "devDependencies": {
-    "chalk": "^4.1.0"
+    "chalk": "^4.1.0",
+    "npm-run-all": "^4.1.5"
   }
 }

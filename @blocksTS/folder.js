@@ -1,5 +1,7 @@
-const { readdirSync } = require('fs');
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.folder = void 0;
+const fs_1 = require("fs");
 const folder = {
     content: {
         /* ---------------------------------------------------
@@ -8,13 +10,13 @@ const folder = {
             folder supplied
         ----------------------------------------------------*/
         list: ({ targetFolder }) => {
-            const folderContent = readdirSync(targetFolder, (err, filesAndFolders) => {
-                if (err) {
-                  throw err;
-                }
-                return filesAndFolders;
-            });
-            return folderContent;
+            try {
+                const folderContent = (0, fs_1.readdirSync)(targetFolder);
+                return folderContent;
+            }
+            catch (err) {
+                throw err;
+            }
         },
         /* -----------------------------------------------------
             Returns: boolean
@@ -27,7 +29,4 @@ const folder = {
         },
     },
 };
-
-export {
-    folder,
-};
+exports.folder = folder;

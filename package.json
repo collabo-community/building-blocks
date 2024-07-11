@@ -1,7 +1,7 @@
 {
   "name": "@collabo-community/building-blocks",
   "version": "0.0.0",
-  "description": "Building blocks",
+  "description": "The Building blocks framework repos is a collection of libraries and/or ideas, built to help achieve a predictable, structured and perfomant style of writing code. The ideology behind building blocks is also being developed to include non-code settings.",
   "main": "@blocksTS/index.ts",
   "types": "@blocksTS/index.d.ts",
   "files": [
@@ -36,6 +36,6 @@
     "url": "https://github.com/collabo-community/contributor-issue-report/issues?q=is%3Aissue+is%3Aopen+label%3A%22project%3A+building+blocks%22"
   },
   "author": "Collabo Community [Code Collabo]",
-  "license": "GNU AFFERO GENERAL PUBLIC LICENSE v3.0",
-  "contributors": []
+  "license": "AGPL v3.0",
+  "contributors": ["Find list of contributors in project README: https://github.com/collabo-community/building-blocks?tab=readme-ov-file#contributors"]
 }

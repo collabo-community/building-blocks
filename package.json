@@ -10,8 +10,8 @@
     "blocks:ts": "",
     "blocks:ts:build": "npx tsc",
     "blocks:css": "npm-run-all --parallel blocks:css:scss blocks:css:watch-delete",
-    "blocks:css:scss": "sass --watch --source-map @blocksCSS/scss:@blocksCSS/css",
-    "blocks:css:watch-delete": "node @blocksCSS/watch-delete.js"
+    "blocks:css:scss": "sass --watch --source-map @dev/@blocksCSS/scss:@dev/@blocksCSS/css",
+    "blocks:css:watch-delete": "node @dev/@blocksCSS/watch-delete.js"
   },
   "dependencies": {
     "chokidar": "^3.6.0",

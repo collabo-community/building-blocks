@@ -29,6 +29,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "AbrahamAkp",
+      "name": "AbrahamAkp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/138671663?v=4",
+      "profile": "https://github.com/AbrahamAkp",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "commitConvention": "angular",

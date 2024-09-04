@@ -29,7 +29,7 @@ const prettify = {
         console.log(message);
       },
       //----------------------------------
-      redBold: (message: string, err: Error) => {
+      redBold: (message: string, err: string) => {
         console.log( prettify.text.color.redBold(message), err );
       },
       //----------------------------------

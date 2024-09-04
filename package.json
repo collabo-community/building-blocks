@@ -2,8 +2,8 @@
   "name": "@collabo-community/building-blocks",
   "version": "0.0.0",
   "description": "The Building blocks framework repos is a collection of libraries and/or ideas, built to help achieve a predictable, structured and perfomant style of writing code. The ideology behind building blocks is also being developed to include non-code settings.",
-  "main": "index.ts",
-  "types": "index.d.ts",
+  "main": "@blocksTS/index.ts",
+  "types": "@blocksTS/index.d.ts",
   "files": [
   ],
   "scripts": {

@@ -5,7 +5,7 @@ declare const prettify: {
         error: (message: string) => void;
         color: {
             none: (message: string) => void;
-            redBold: (message: string, err: Error) => void;
+            redBold: (message: string, err: string) => void;
             cyanBright: (message: string) => void;
             green: (message: string) => string;
         };
@@ -27,7 +27,7 @@ declare const log: {
     error: (message: string) => void;
     color: {
         none: (message: string) => void;
-        redBold: (message: string, err: Error) => void;
+        redBold: (message: string, err: string) => void;
         cyanBright: (message: string) => void;
         green: (message: string) => string;
     };

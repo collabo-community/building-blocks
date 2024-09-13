@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "@blocksDOC": {
+    "web-client": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "@blocksDOC:build:production"
+              "buildTarget": "web-client:build:production"
             },
             "development": {
-              "buildTarget": "@blocksDOC:build:development"
+              "buildTarget": "web-client:build:development"
             }
           },
           "defaultConfiguration": "development",

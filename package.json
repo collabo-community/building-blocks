@@ -7,8 +7,8 @@
   "files": [
   ],
   "scripts": {
-    "blocks:doc:api": "nodemon --exec ts-node @blocksDOC_api/server.ts",
-    "blocks:doc:client": "cd @blocksDOC && npm run start",
+    "blocks:doc:api": "nodemon --exec ts-node @dev/@blocksDOC/api-server/server.ts",
+    "blocks:doc:client": "cd @dev/@blocksDOC/web-client && npm start",
     "blocks:ts": "",
     "blocks:ts:build": "npx tsc",
     "blocks:css": "npm-run-all --parallel blocks:css:scss blocks:css:watch-delete",

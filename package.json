@@ -10,7 +10,9 @@
     "blocks:doc:api": "nodemon --exec ts-node @dev/@blocksDOC/api-server/server.ts",
     "blocks:doc:client": "cd @dev/@blocksDOC/web-client && npm start",
     "blocks:ts": "",
-    "blocks:ts:build": "npx tsc",
+    "blocks:ts:npx": "npx tsc",
+    "blocks:ts:clean": "del-cli @blocksDOC @blocksTS index.js index.d.ts",
+    "blocks:ts:build": "npm-run-all --sequential blocks:ts:clean blocks:ts:npx",
     "blocks:css": "npm-run-all --parallel blocks:css:scss blocks:css:watch-delete",
     "blocks:css:scss": "sass --watch --source-map @dev/@blocksCSS/scss:@dev/@blocksCSS/css",
     "blocks:css:watch-delete": "node @dev/@blocksCSS/watch-delete.js"
@@ -35,6 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
     "chalk": "^4.1.0",
+    "del-cli": "^5.1.0",
     "eslint": "^8.39.0",
     "eslint-watch": "^8.0.0",
     "nodemon": "^2.0.22",

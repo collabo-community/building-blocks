@@ -1,6 +1,9 @@
 import { readdirSync } from 'fs';
 
 const folder = {
+  // create: ({}: {}) => {
+
+  // },
   content: {
         /* ---------------------------------------------------
             Returns: Array of strings
@@ -8,12 +11,8 @@ const folder = {
             folder supplied
         ----------------------------------------------------*/
         list: ({ targetFolder }: { targetFolder: string }) => {
-            try {
-              const folderContent: string[] = readdirSync(targetFolder);
-              return folderContent;
-            } catch (err) {
-              throw err;
-            }
+          const folderContent: string[] = readdirSync(targetFolder);
+          return folderContent;
       },
         /* -----------------------------------------------------
             Returns: boolean

@@ -1,9 +1,10 @@
-import { readdirSync } from 'fs';
+import { mkdirSync, readdirSync } from 'fs';
 
 const folder = {
-  // create: ({}: {}) => {
-
-  // },
+  create: ({ folderPath }: { folderPath: string }) => {
+    mkdirSync(folderPath, { recursive: true });
+    return;
+  },
   content: {
         /* ---------------------------------------------------
             Returns: Array of strings

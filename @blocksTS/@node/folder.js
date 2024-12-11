@@ -3,8 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.folder = void 0;
 const fs_1 = require("fs");
 const folder = {
-    // create: ({}: {}) => {
-    // },
+    create: ({ folderPath }) => {
+        (0, fs_1.mkdirSync)(folderPath, { recursive: true });
+        return;
+    },
     content: {
         /* ---------------------------------------------------
             Returns: Array of strings

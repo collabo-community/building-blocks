@@ -1,37 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -41,11 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blocks = void 0;
+const arg_1 = __importDefault(require("arg"));
 const node_1 = require("../../@base/node");
 const _node_1 = require("../../@node");
-// import { log } from '../../@plain/prettify';
+const prettify_1 = require("../../@plain/prettify");
 const file_1 = require("../../@node/file");
 const folder_1 = require("../../@node/folder");
 const resolvedPath = {
@@ -69,10 +40,36 @@ const blocks = {
             _node_1.npm.run({ script, packageJsonFilePath: packageConfigFilePath });
         },
     },
-    cli: {
+    command: {
         script: {
-            dev: 'cli:dev',
-            prod: 'prod:build',
+            full: 'blocks-assistant',
+            short: 'blocks',
+        },
+        get: () => {
+            try {
+                let options;
+                const args = (0, arg_1.default)({}, 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                (options = { permissive: false, argv: process.argv.slice(1) }));
+                let blocksCommand = '';
+                if (args._[0].slice(-16) === blocks.command.script.full)
+                    blocksCommand = blocks.command.script.full;
+                if (args._[0].slice(-6) === blocks.command.script.short)
+                    blocksCommand = blocks.command.script.short;
+                return blocksCommand;
+            }
+            catch (err) {
+                prettify_1.log.error(`ERRRRRROR: ${err}`);
+            }
+            return;
+        }
+    },
+    cli: {
+        package: {
+            script: {
+                dev: 'dev:dist',
+                prod: 'prod:build',
+            },
         },
         config: {
             set: (_a) => __awaiter(void 0, [_a], void 0, function* ({ settings }) {
@@ -82,18 +79,44 @@ const blocks = {
                 //     // blocks.cli.config.update({ settings: config });
                 // } 
                 if (!configFilesExist) {
-                    blocks.cli.config.create({ settings });
-                    blocks.framework.run({ script: settings.cli.script });
-                }
-                if (configFilesExist) {
-                    blocks.cli.config.update({ settings });
-                    const { default: config } = yield Promise.resolve(`${resolvedPath.file.js}`).then(s => __importStar(require(s)));
-                    // console.log(config, settings);
-                    settings = config;
-                    if (settings.cli.isDevMode) { // only trigger npm run if isDevMode, so that it doesn't keep looping...
-                        blocks.framework.run({ script: settings.cli.script });
+                    if (settings.cli.blocks.command) { // only trigger npm run if blocksCommand, so that it doesn't keep looping...
+                        prettify_1.log.warning('Using Math to random to simulate user\'s choice from inquirer');
+                        const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.dev : blocks.cli.package.script.prod;
+                        settings.cli.blocks.script = usersScriptChoice;
                     }
+                    console.log('settings: ', settings);
+                    blocks.cli.config.create({ settings });
+                    settings.cli.blocks.script = settings.cli.blocks.command ? `cli:${settings.cli.blocks.script}` : settings.cli.blocks.script;
+                    blocks.framework.run({ script: settings.cli.blocks.script });
                 }
+                // if (configFilesExist) {
+                //     blocks.cli.config.update({ settings });
+                //     const { default: config } = await import(resolvedPath.file.js);
+                //     // console.log(config, settings);
+                //     settings = config; //Use settings from config
+                //     if (settings.cli.blocks.command) { // only trigger npm run if blocksCommand, so that it doesn't keep looping...
+                //         blocks.framework.run({ script: settings.cli.script });
+                //     }
+                // }
+                // If pkgScripts (first) also create, but (later) continue to update config
+                // If blocks command (first) also create, but (later) don't update config
+                // If "First timer user" is TRUE: (only blocks command? or whether it's blocksCommand or prod command?) Inquirer asks user (dev or prod mode)?
+                //                                 And then creates the config files, and save user's selection.
+                // if "First timer user" is FALSE: No update to config files, it just uses what's saved in the config
+                //                                 Any other time user
+                // if (!configFilesExist) {
+                //     blocks.cli.config.create({ settings });
+                //     blocks.framework.run({ script: settings.cli.script });
+                // }
+                // if (configFilesExist) {
+                //     blocks.cli.config.update({ settings });
+                //     const { default: config } = await import(resolvedPath.file.js);
+                //     // console.log(config, settings);
+                //     settings = config; //Use settings from config
+                //     if (settings.cli.blocksCommand) { // only trigger npm run if blocksCommand, so that it doesn't keep looping...
+                //         blocks.framework.run({ script: settings.cli.script });
+                //     }
+                // }
                 // if (configFilesExist) {
                 // const { default: config } = await import(resolvedPath.file.js);
                 // console.log(config, settings);

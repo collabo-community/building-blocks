@@ -1,13 +1,20 @@
+import arg, { Options } from 'arg';
 import { _blocks } from '../../@base/node';
 import { npm } from '../../@node';
-// import { log } from '../../@plain/prettify';
+import { log } from '../../@plain/prettify';
 import { file } from '../../@node/file';
 import { folder } from '../../@node/folder';
 
 interface Config {
     cli: {
-        isDevMode: boolean;
-        script: string;
+        // blocksCommand: boolean;
+        // userIsFirstTimer?: boolean;
+        blocks: {
+            command?: boolean;
+            commandfirstTimeUsage?: boolean;
+            script: string;
+        };
+        isDevMode?: boolean;
     },
 }
 
@@ -35,10 +42,35 @@ const blocks = {
             npm.run({script, packageJsonFilePath: packageConfigFilePath });
         },
     },
-    cli: {
+    command: {
         script: {
-            dev: 'cli:dev',
-            prod: 'prod:build',
+            full: 'blocks-assistant',
+            short: 'blocks',
+        },
+        get: () => {
+            try {
+                let options: Options;
+                const args = arg(
+                    {},
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    (options = { permissive: false, argv: process.argv.slice(1) })
+                );
+                let blocksCommand = '';
+                if (args._[0].slice(-16) === blocks.command.script.full) blocksCommand = blocks.command.script.full;
+                if (args._[0].slice(-6) === blocks.command.script.short) blocksCommand = blocks.command.script.short;
+                return blocksCommand;
+             } catch (err) {
+               log.error(`ERRRRRROR: ${err}`);
+             }
+             return;
+        }
+    },
+    cli: {
+        package: {
+            script: {
+                dev: 'dev:dist',
+                prod: 'prod:build',
+            },
         },
         config: {
             set: async ({ settings }: { settings: Config | Record<string, never> }) => {
@@ -49,19 +81,50 @@ const blocks = {
                 // } 
 
                 if (!configFilesExist) {
+                    if (settings.cli.blocks.command) { // only trigger npm run if blocksCommand, so that it doesn't keep looping...
+                        log.warning('Using Math to random to simulate user\'s choice from inquirer');
+                        const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.dev : blocks.cli.package.script.prod;
+                        settings.cli.blocks.script = usersScriptChoice;
+                    }
+                    console.log('settings: ', settings);
                     blocks.cli.config.create({ settings });
-                    blocks.framework.run({ script: settings.cli.script });
+                    settings.cli.blocks.script = settings.cli.blocks.command ? `cli:${settings.cli.blocks.script}` : settings.cli.blocks.script;
+                    blocks.framework.run({ script: settings.cli.blocks.script });
                 }
 
-                if (configFilesExist) {
-                    blocks.cli.config.update({ settings });
-                    const { default: config } = await import(resolvedPath.file.js);
-                    // console.log(config, settings);
-                    settings = config; //Use settings from config
-                    if (settings.cli.isDevMode) { // only trigger npm run if isDevMode, so that it doesn't keep looping...
-                        blocks.framework.run({ script: settings.cli.script });
-                    }
-                }
+                // if (configFilesExist) {
+                //     blocks.cli.config.update({ settings });
+                //     const { default: config } = await import(resolvedPath.file.js);
+                //     // console.log(config, settings);
+                //     settings = config; //Use settings from config
+                //     if (settings.cli.blocks.command) { // only trigger npm run if blocksCommand, so that it doesn't keep looping...
+                //         blocks.framework.run({ script: settings.cli.script });
+                //     }
+                // }
+
+                // If pkgScripts (first) also create, but (later) continue to update config
+                // If blocks command (first) also create, but (later) don't update config
+
+
+                // If "First timer user" is TRUE: (only blocks command? or whether it's blocksCommand or prod command?) Inquirer asks user (dev or prod mode)?
+                //                                 And then creates the config files, and save user's selection.
+                // if "First timer user" is FALSE: No update to config files, it just uses what's saved in the config
+                //                                 Any other time user
+
+                // if (!configFilesExist) {
+                //     blocks.cli.config.create({ settings });
+                //     blocks.framework.run({ script: settings.cli.script });
+                // }
+
+                // if (configFilesExist) {
+                //     blocks.cli.config.update({ settings });
+                //     const { default: config } = await import(resolvedPath.file.js);
+                //     // console.log(config, settings);
+                //     settings = config; //Use settings from config
+                //     if (settings.cli.blocksCommand) { // only trigger npm run if blocksCommand, so that it doesn't keep looping...
+                //         blocks.framework.run({ script: settings.cli.script });
+                //     }
+                // }
                     
                    
 

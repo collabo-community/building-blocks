@@ -1,7 +1,11 @@
 interface Config {
     cli: {
-        isDevMode: boolean;
-        script: string;
+        blocks: {
+            command?: boolean;
+            commandfirstTimeUsage?: boolean;
+            script: string;
+        };
+        isDevMode?: boolean;
     };
 }
 declare const blocks: {
@@ -11,10 +15,19 @@ declare const blocks: {
             packageConfigFilePath?: string;
         }) => void;
     };
-    cli: {
+    command: {
         script: {
-            dev: string;
-            prod: string;
+            full: string;
+            short: string;
+        };
+        get: () => string | undefined;
+    };
+    cli: {
+        package: {
+            script: {
+                dev: string;
+                prod: string;
+            };
         };
         config: {
             set: ({ settings }: {

@@ -18,8 +18,14 @@ declare const blocks: {
     cli: {
         package: {
             script: {
-                dev: string;
-                prod: string;
+                blocks: {
+                    dev: string;
+                    prod: string;
+                };
+                other: {
+                    dev: string;
+                    prod: string;
+                };
             };
         };
         config: {

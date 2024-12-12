@@ -78,14 +78,20 @@ const blocks = {
     cli: {
         package: {
             script: {
-                dev: 'dev:dist',
-                prod: 'prod:build',
+                blocks: {
+                    dev: 'blocks:dev:dist',
+                    prod: 'blocks:prod:build',
+                },
+                other: {
+                    dev: 'dev:dist',
+                    prod: 'prod:build',
+                },
             },
         },
         config: {
             create: ({ content }) => {
-                console.log('from folder/file create func(): ', content);
-                console.log('from folder/file create func(): ', content.cli.custom);
+                // console.log('from folder/file create func(): ', content);
+                // console.log('from folder/file create func(): ', content.cli.custom);
                 folder_1.folder.create({ folderPath: resolvedPath.folder });
                 file_1.file.create.withContent({
                     filePathName: resolvedPath.file.js,
@@ -101,8 +107,8 @@ const blocks = {
                 });
             },
             update: ({ content }) => {
-                console.log('from folder/file UPDATE func(): ', content);
-                console.log('from folder/file UPDATE func(): ', content.cli.custom);
+                // console.log('from folder/file UPDATE func(): ', content);
+                // console.log('from folder/file UPDATE func(): ', content.cli.custom);
                 file_1.file.content.overwrite({
                     filePathName: resolvedPath.file.js,
                     content,
@@ -112,10 +118,7 @@ const blocks = {
                 });
             },
             set: (_a) => __awaiter(void 0, [_a], void 0, function* ({ env }) {
-                // const usersCliCustomCommand = blocks.cli.custom.command.get();
                 const npmLifeCycleEvent = env.npm_lifecycle_event;
-                // console.log({ usersCustomCommand });
-                // console.log({ npmLifeCycleEvent });
                 let settings = {
                     cli: {
                         custom: {
@@ -126,23 +129,27 @@ const blocks = {
                     }
                 };
                 const createConfig = ({ content, script }) => {
-                    settings.cli.isInDevMode = script === blocks.cli.package.script.dev;
+                    const packageScript = content.cli.custom.command ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.other.dev;
+                    content.cli.isInDevMode = script === packageScript;
                     blocks.cli.config.create({ content });
                 };
                 const updateConfig = ({ content, script }) => {
-                    settings.cli.isInDevMode = script === blocks.cli.package.script.dev;
+                    const packageScript = content.cli.custom.command ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.other.dev;
+                    content.cli.isInDevMode = script === packageScript;
                     blocks.cli.config.update({ content });
                 };
                 if (settings.cli.custom.command) {
                     if (!configFilesExist) {
                         //----------------------------------------------
                         prettify_1.log.warning('Using Math to random to simulate user\'s choice from inquirer');
-                        const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.dev : blocks.cli.package.script.prod;
+                        const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.blocks.prod;
                         settings.cli.custom.script = usersScriptChoice;
                         //----------------------------------------------
+                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.script.blocks.dev || npmLifeCycleEvent === blocks.cli.package.script.blocks.prod;
                         settings.cli.custom.commandUsedAtLeastOnce = true;
                         //----------------------------------------------
-                        settings.cli.custom.command = true;
+                        const npmRunBlocksPackageScript = usersScriptChoice.replace('blocks:', 'blocks:cli:');
+                        blocks.framework.run({ script: npmRunBlocksPackageScript });
                         createConfig({
                             content: settings,
                             script: settings.cli.custom.script
@@ -152,17 +159,19 @@ const blocks = {
                         const { default: config } = yield Promise.resolve(`${resolvedPath.file.js}`).then(s => __importStar(require(s)));
                         //--------------------
                         settings = config;
+                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.script.blocks.dev || npmLifeCycleEvent === blocks.cli.package.script.blocks.prod;
                         //--------------------
                         if (!settings.cli.custom.commandUsedAtLeastOnce) {
                             //----------------------------------------------
-                            prettify_1.log.warning('*** - *** - Using Math to random to simulate user\'s choice from inquirer');
-                            const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.dev : blocks.cli.package.script.prod;
+                            prettify_1.log.warning('Using Math to random to simulate user\'s choice from inquirer');
+                            const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.blocks.prod;
                             settings.cli.custom.script = usersScriptChoice;
                             //----------------------------------------------
                             settings.cli.custom.commandUsedAtLeastOnce = true;
                             //----------------------------------------------
                         }
-                        settings.cli.custom.command = true;
+                        const npmRunBlocksPackageScript = settings.cli.custom.script.replace('blocks:', 'blocks:cli:');
+                        blocks.framework.run({ script: npmRunBlocksPackageScript });
                         updateConfig({
                             content: settings,
                             script: settings.cli.custom.script
@@ -178,17 +187,12 @@ const blocks = {
                         //--------------------
                         settings = config;
                         //--------------------
-                        settings.cli.custom.command = false;
+                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.script.blocks.dev || npmLifeCycleEvent === blocks.cli.package.script.blocks.prod;
                         updateConfig({ content: settings, script: npmLifeCycleEvent });
                     }
                 }
             }),
         },
-        // run: ({ settings }: { settings: Config | Record<string, never> }) => {
-        //     console.log('From run func(): ', settings);
-        //     // settings.cli.blocks.script = settings.cli.blocks.command ? `cli:${settings.cli.blocks.script}` : settings.cli.blocks.script;
-        //     blocks.framework.run({ script: settings.cli.custom.script });
-        // },
         custom: {
             command: {
                 script: {

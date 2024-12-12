@@ -7,12 +7,12 @@ import { folder } from '../../@node/folder';
 
 interface Config {
     cli: {
-        blocks: {
+        custom: {
             command?: boolean;
             commandUsedAtLeastOnce?: boolean;
             script: string;
         };
-        isDevMode?: boolean;
+        isInDevMode?: boolean;
     },
 }
 
@@ -49,65 +49,14 @@ const blocks = {
                 prod: 'prod:build',
             },
         },
-        inquire: {
-            true: ({ settings }: { settings: Config | Record<string, never>, config?: Config | Record<string, never>  }) => {
-                settings.cli.blocks = JSON.parse(JSON.stringify(settings.cli.blocks));
-                const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.dev : blocks.cli.package.script.prod;
-                settings.cli.blocks.script = usersScriptChoice;
-                log.warning('Using Math to random to simulate user\'s choice from inquirer');
-                !configFilesExist ? blocks.cli.inquire.false.config.create({ settings }) : blocks.cli.inquire.false.config.update({ settings });
-            },
-            false: {
-                config: {
-                    create: ({ settings }: { settings: Config | Record<string, never> }) => {
-                        blocks.cli.config.create({ settings });
-                        blocks.cli.run({ settings });
-                    },
-                    update: ({ settings }: { settings: Config | Record<string, never> }) => {
-                        blocks.cli.config.update({ settings });
-                        blocks.cli.run({ settings });
-                    }
-                }
-            }
-        },
-        run: ({ settings }: { settings: Config | Record<string, never> }) => {
-            settings.cli.blocks.script = settings.cli.blocks.command ? `cli:${settings.cli.blocks.script}` : settings.cli.blocks.script;
-            blocks.framework.run({ script: settings.cli.blocks.script });
-        },
         config: {
-            set: async ({ settings }: { settings: Config | Record<string, never> }) => {
-                if (!configFilesExist) {
-                    if (settings.cli.blocks.command) {
-                        settings.cli.blocks.commandUsedAtLeastOnce = settings.cli.blocks.commandUsedAtLeastOnce === undefined;
-                        blocks.cli.inquire.true({ settings });
-                    } else {
-                        settings.cli.blocks.commandUsedAtLeastOnce = false;
-                        blocks.cli.config.create({ settings });
-                    }
-                }
-
-                if (configFilesExist) {
-                    if (settings.cli.blocks.command) {
-                        const { default: config } = await import(resolvedPath.file.js);
-                        if (!config.cli.blocks.commandUsedAtLeastOnce) {
-                            settings.cli.blocks.commandUsedAtLeastOnce = true;
-                            blocks.cli.inquire.true({ settings, config });
-                        } else {
-                            settings.cli.blocks = config.cli.blocks;
-                            blocks.cli.run({ settings });
-                        }
-                    }
-                    if (!settings.cli.blocks.command) {
-                        blocks.framework.run({ script: settings.cli.blocks.script });
-                    }
-                }
-                return;
-            },
-            create: async ({ settings }: { settings: Config | Record<string, never> }) => {
+            create: ({ content }: { content: Config | Record<string, never> }) => {
+                console.log('from folder/file create func(): ', content);
+                console.log('from folder/file create func(): ', content.cli.custom);
                 folder.create({ folderPath: resolvedPath.folder });
                 file.create.withContent({ 
                     filePathName: resolvedPath.file.js,
-                    content: settings,
+                    content,
                     type: 'object',
                     prependText,
                     appendText,
@@ -118,16 +67,98 @@ const blocks = {
                     type: 'string',
                 });
             },
-            update: async ({ settings }: { settings: Config | Record<string, never> }) => {
+            update: ({ content }: { content: Config | Record<string, never> }) => {
+                console.log('from folder/file UPDATE func(): ', content);
+                console.log('from folder/file UPDATE func(): ', content.cli.custom);
                 file.content.overwrite({
                     filePathName: resolvedPath.file.js,
-                    content: settings,
+                    content,
                     type: 'object',
                     prependText,
                     appendText,
                 });
             },
+            set: async ({ env }: { env: NodeJS.ProcessEnv }) => {
+                // const usersCliCustomCommand = blocks.cli.custom.command.get();
+                const npmLifeCycleEvent = env.npm_lifecycle_event;
+                // console.log({ usersCustomCommand });
+                // console.log({ npmLifeCycleEvent });
+
+                let settings: Config | Record<string, never> = {
+                    cli: {
+                        custom: {
+                            command: npmLifeCycleEvent === undefined,
+                            commandUsedAtLeastOnce: false,
+                            script: '',
+                        },
+                    }
+                }
+                const createConfig = ({ content, script }: { content: Config | Record<string, never>; script: string | undefined }) => {
+                    settings.cli.isInDevMode = script === blocks.cli.package.script.dev;
+                    blocks.cli.config.create({ content });
+                }
+
+                const updateConfig = ({ content, script }: { content: Config | Record<string, never>; script: string | undefined }) => {
+                    settings.cli.isInDevMode = script === blocks.cli.package.script.dev;
+                    blocks.cli.config.update({ content });
+                }
+
+                if (settings.cli.custom.command) {
+                    if (!configFilesExist) {
+                        //----------------------------------------------
+                        log.warning('Using Math to random to simulate user\'s choice from inquirer');
+                        const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.dev : blocks.cli.package.script.prod;
+                        settings.cli.custom.script = usersScriptChoice;
+                        //----------------------------------------------
+                        settings.cli.custom.commandUsedAtLeastOnce = true;
+                        //----------------------------------------------
+                        settings.cli.custom.command = true;
+                        createConfig({ 
+                            content: settings,
+                            script: settings.cli.custom.script 
+                        });
+                    } else {
+                        const { default: config } = await import(resolvedPath.file.js);
+                        //--------------------
+                            settings = config;
+                        //--------------------
+                        if (!settings.cli.custom.commandUsedAtLeastOnce) {
+                            //----------------------------------------------
+                            log.warning('*** - *** - Using Math to random to simulate user\'s choice from inquirer');
+                            const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.dev : blocks.cli.package.script.prod;
+                            settings.cli.custom.script = usersScriptChoice;
+                            //----------------------------------------------
+                            settings.cli.custom.commandUsedAtLeastOnce = true;
+                            //----------------------------------------------
+                        }
+                        settings.cli.custom.command = true;
+                        updateConfig({ 
+                            content: settings,
+                            script: settings.cli.custom.script
+                        });
+                    }
+                }
+
+                if (!settings.cli.custom.command) {
+                    if (!configFilesExist) {
+                        createConfig({ content: settings, script: npmLifeCycleEvent });
+                    } 
+                    else {
+                        const { default: config } = await import(resolvedPath.file.js);
+                        //--------------------
+                        settings = config;
+                        //--------------------
+                        settings.cli.custom.command = false;
+                        updateConfig({ content: settings, script: npmLifeCycleEvent });
+                    }
+                }
+            },
         },
+        // run: ({ settings }: { settings: Config | Record<string, never> }) => {
+        //     console.log('From run func(): ', settings);
+        //     // settings.cli.blocks.script = settings.cli.blocks.command ? `cli:${settings.cli.blocks.script}` : settings.cli.blocks.script;
+        //     blocks.framework.run({ script: settings.cli.custom.script });
+        // },
         custom: {
             command: {
                 script: {
@@ -146,15 +177,14 @@ const blocks = {
                         if (args._[0].slice(-blocks.cli.custom.command.script.full.length) === blocks.cli.custom.command.script.full) blocksCommand = blocks.cli.custom.command.script.full;
                         if (args._[0].slice(-blocks.cli.custom.command.script.short.length) === blocks.cli.custom.command.script.short) blocksCommand = blocks.cli.custom.command.script.short;
                         return blocksCommand;
-                     } catch (err) {
-                       log.error(`ERRRRRROR: ${err}`);
-                     }
-                     return;
-                }
+                    } catch (err) {
+                    log.error(`ERRRRRROR: ${err}`);
+                    }
+                    return;
+                },
             },
         },
     },
-    //----------------------------------------------------------------------
 };
 
 export {

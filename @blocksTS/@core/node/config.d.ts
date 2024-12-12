@@ -1,11 +1,11 @@
 interface Config {
     cli: {
-        blocks: {
+        custom: {
             command?: boolean;
             commandUsedAtLeastOnce?: boolean;
             script: string;
         };
-        isDevMode?: boolean;
+        isInDevMode?: boolean;
     };
 }
 declare const blocks: {
@@ -22,34 +22,15 @@ declare const blocks: {
                 prod: string;
             };
         };
-        inquire: {
-            true: ({ settings }: {
-                settings: Config | Record<string, never>;
-                config?: Config | Record<string, never>;
-            }) => void;
-            false: {
-                config: {
-                    create: ({ settings }: {
-                        settings: Config | Record<string, never>;
-                    }) => void;
-                    update: ({ settings }: {
-                        settings: Config | Record<string, never>;
-                    }) => void;
-                };
-            };
-        };
-        run: ({ settings }: {
-            settings: Config | Record<string, never>;
-        }) => void;
         config: {
-            set: ({ settings }: {
-                settings: Config | Record<string, never>;
-            }) => Promise<void>;
-            create: ({ settings }: {
-                settings: Config | Record<string, never>;
-            }) => Promise<void>;
-            update: ({ settings }: {
-                settings: Config | Record<string, never>;
+            create: ({ content }: {
+                content: Config | Record<string, never>;
+            }) => void;
+            update: ({ content }: {
+                content: Config | Record<string, never>;
+            }) => void;
+            set: ({ env }: {
+                env: NodeJS.ProcessEnv;
             }) => Promise<void>;
         };
         custom: {

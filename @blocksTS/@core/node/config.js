@@ -82,66 +82,14 @@ const blocks = {
                 prod: 'prod:build',
             },
         },
-        inquire: {
-            true: ({ settings }) => {
-                settings.cli.blocks = JSON.parse(JSON.stringify(settings.cli.blocks));
-                const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.dev : blocks.cli.package.script.prod;
-                settings.cli.blocks.script = usersScriptChoice;
-                prettify_1.log.warning('Using Math to random to simulate user\'s choice from inquirer');
-                !configFilesExist ? blocks.cli.inquire.false.config.create({ settings }) : blocks.cli.inquire.false.config.update({ settings });
-            },
-            false: {
-                config: {
-                    create: ({ settings }) => {
-                        blocks.cli.config.create({ settings });
-                        blocks.cli.run({ settings });
-                    },
-                    update: ({ settings }) => {
-                        blocks.cli.config.update({ settings });
-                        blocks.cli.run({ settings });
-                    }
-                }
-            }
-        },
-        run: ({ settings }) => {
-            settings.cli.blocks.script = settings.cli.blocks.command ? `cli:${settings.cli.blocks.script}` : settings.cli.blocks.script;
-            blocks.framework.run({ script: settings.cli.blocks.script });
-        },
         config: {
-            set: (_a) => __awaiter(void 0, [_a], void 0, function* ({ settings }) {
-                if (!configFilesExist) {
-                    if (settings.cli.blocks.command) {
-                        settings.cli.blocks.commandUsedAtLeastOnce = settings.cli.blocks.commandUsedAtLeastOnce === undefined;
-                        blocks.cli.inquire.true({ settings });
-                    }
-                    else {
-                        settings.cli.blocks.commandUsedAtLeastOnce = false;
-                        blocks.cli.config.create({ settings });
-                    }
-                }
-                if (configFilesExist) {
-                    if (settings.cli.blocks.command) {
-                        const { default: config } = yield Promise.resolve(`${resolvedPath.file.js}`).then(s => __importStar(require(s)));
-                        if (!config.cli.blocks.commandUsedAtLeastOnce) {
-                            settings.cli.blocks.commandUsedAtLeastOnce = true;
-                            blocks.cli.inquire.true({ settings, config });
-                        }
-                        else {
-                            settings.cli.blocks = config.cli.blocks;
-                            blocks.cli.run({ settings });
-                        }
-                    }
-                    if (!settings.cli.blocks.command) {
-                        blocks.framework.run({ script: settings.cli.blocks.script });
-                    }
-                }
-                return;
-            }),
-            create: (_a) => __awaiter(void 0, [_a], void 0, function* ({ settings }) {
+            create: ({ content }) => {
+                console.log('from folder/file create func(): ', content);
+                console.log('from folder/file create func(): ', content.cli.custom);
                 folder_1.folder.create({ folderPath: resolvedPath.folder });
                 file_1.file.create.withContent({
                     filePathName: resolvedPath.file.js,
-                    content: settings,
+                    content,
                     type: 'object',
                     prependText,
                     appendText,
@@ -151,17 +99,96 @@ const blocks = {
                     content: 'declare module \'@collabo-community/building-blocks/config/settings/cli.js\';',
                     type: 'string',
                 });
-            }),
-            update: (_a) => __awaiter(void 0, [_a], void 0, function* ({ settings }) {
+            },
+            update: ({ content }) => {
+                console.log('from folder/file UPDATE func(): ', content);
+                console.log('from folder/file UPDATE func(): ', content.cli.custom);
                 file_1.file.content.overwrite({
                     filePathName: resolvedPath.file.js,
-                    content: settings,
+                    content,
                     type: 'object',
                     prependText,
                     appendText,
                 });
+            },
+            set: (_a) => __awaiter(void 0, [_a], void 0, function* ({ env }) {
+                // const usersCliCustomCommand = blocks.cli.custom.command.get();
+                const npmLifeCycleEvent = env.npm_lifecycle_event;
+                // console.log({ usersCustomCommand });
+                // console.log({ npmLifeCycleEvent });
+                let settings = {
+                    cli: {
+                        custom: {
+                            command: npmLifeCycleEvent === undefined,
+                            commandUsedAtLeastOnce: false,
+                            script: '',
+                        },
+                    }
+                };
+                const createConfig = ({ content, script }) => {
+                    settings.cli.isInDevMode = script === blocks.cli.package.script.dev;
+                    blocks.cli.config.create({ content });
+                };
+                const updateConfig = ({ content, script }) => {
+                    settings.cli.isInDevMode = script === blocks.cli.package.script.dev;
+                    blocks.cli.config.update({ content });
+                };
+                if (settings.cli.custom.command) {
+                    if (!configFilesExist) {
+                        //----------------------------------------------
+                        prettify_1.log.warning('Using Math to random to simulate user\'s choice from inquirer');
+                        const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.dev : blocks.cli.package.script.prod;
+                        settings.cli.custom.script = usersScriptChoice;
+                        //----------------------------------------------
+                        settings.cli.custom.commandUsedAtLeastOnce = true;
+                        //----------------------------------------------
+                        settings.cli.custom.command = true;
+                        createConfig({
+                            content: settings,
+                            script: settings.cli.custom.script
+                        });
+                    }
+                    else {
+                        const { default: config } = yield Promise.resolve(`${resolvedPath.file.js}`).then(s => __importStar(require(s)));
+                        //--------------------
+                        settings = config;
+                        //--------------------
+                        if (!settings.cli.custom.commandUsedAtLeastOnce) {
+                            //----------------------------------------------
+                            prettify_1.log.warning('*** - *** - Using Math to random to simulate user\'s choice from inquirer');
+                            const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.dev : blocks.cli.package.script.prod;
+                            settings.cli.custom.script = usersScriptChoice;
+                            //----------------------------------------------
+                            settings.cli.custom.commandUsedAtLeastOnce = true;
+                            //----------------------------------------------
+                        }
+                        settings.cli.custom.command = true;
+                        updateConfig({
+                            content: settings,
+                            script: settings.cli.custom.script
+                        });
+                    }
+                }
+                if (!settings.cli.custom.command) {
+                    if (!configFilesExist) {
+                        createConfig({ content: settings, script: npmLifeCycleEvent });
+                    }
+                    else {
+                        const { default: config } = yield Promise.resolve(`${resolvedPath.file.js}`).then(s => __importStar(require(s)));
+                        //--------------------
+                        settings = config;
+                        //--------------------
+                        settings.cli.custom.command = false;
+                        updateConfig({ content: settings, script: npmLifeCycleEvent });
+                    }
+                }
             }),
         },
+        // run: ({ settings }: { settings: Config | Record<string, never> }) => {
+        //     console.log('From run func(): ', settings);
+        //     // settings.cli.blocks.script = settings.cli.blocks.command ? `cli:${settings.cli.blocks.script}` : settings.cli.blocks.script;
+        //     blocks.framework.run({ script: settings.cli.custom.script });
+        // },
         custom: {
             command: {
                 script: {
@@ -185,10 +212,9 @@ const blocks = {
                         prettify_1.log.error(`ERRRRRROR: ${err}`);
                     }
                     return;
-                }
+                },
             },
         },
     },
-    //----------------------------------------------------------------------
 };
 exports.blocks = blocks;

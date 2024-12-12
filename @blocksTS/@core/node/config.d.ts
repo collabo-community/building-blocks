@@ -52,6 +52,15 @@ declare const blocks: {
                 settings: Config | Record<string, never>;
             }) => Promise<void>;
         };
+        custom: {
+            command: {
+                script: {
+                    full: string;
+                    short: string;
+                };
+                get: () => string | undefined;
+            };
+        };
     };
 };
 export { blocks, };

@@ -41,8 +41,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blocks = void 0;
+const arg_1 = __importDefault(require("arg"));
 const node_1 = require("../../@base/node");
 const _node_1 = require("../../@node");
 const prettify_1 = require("../../@plain/prettify");
@@ -157,6 +161,32 @@ const blocks = {
                     appendText,
                 });
             }),
+        },
+        custom: {
+            command: {
+                script: {
+                    full: 'blocks-assistant',
+                    short: 'blocks',
+                },
+                get: () => {
+                    try {
+                        let options;
+                        const args = (0, arg_1.default)({}, 
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        (options = { permissive: false, argv: process.argv.slice(1) }));
+                        let blocksCommand = '';
+                        if (args._[0].slice(-blocks.cli.custom.command.script.full.length) === blocks.cli.custom.command.script.full)
+                            blocksCommand = blocks.cli.custom.command.script.full;
+                        if (args._[0].slice(-blocks.cli.custom.command.script.short.length) === blocks.cli.custom.command.script.short)
+                            blocksCommand = blocks.cli.custom.command.script.short;
+                        return blocksCommand;
+                    }
+                    catch (err) {
+                        prettify_1.log.error(`ERRRRRROR: ${err}`);
+                    }
+                    return;
+                }
+            },
         },
     },
     //----------------------------------------------------------------------

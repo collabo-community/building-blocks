@@ -128,7 +128,31 @@ const blocks = {
                 });
             },
         },
-
+        custom: {
+            command: {
+                script: {
+                    full: 'blocks-assistant',
+                    short: 'blocks',
+                },
+                get: () => {
+                    try {
+                        let options: Options;
+                        const args = arg(
+                            {},
+                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                            (options = { permissive: false, argv: process.argv.slice(1) })
+                        );
+                        let blocksCommand = '';
+                        if (args._[0].slice(-blocks.cli.custom.command.script.full.length) === blocks.cli.custom.command.script.full) blocksCommand = blocks.cli.custom.command.script.full;
+                        if (args._[0].slice(-blocks.cli.custom.command.script.short.length) === blocks.cli.custom.command.script.short) blocksCommand = blocks.cli.custom.command.script.short;
+                        return blocksCommand;
+                     } catch (err) {
+                       log.error(`ERRRRRROR: ${err}`);
+                     }
+                     return;
+                }
+            },
+        },
     },
     //----------------------------------------------------------------------
 };

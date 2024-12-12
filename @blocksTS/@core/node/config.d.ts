@@ -2,7 +2,7 @@ interface Config {
     cli: {
         blocks: {
             command?: boolean;
-            commandfirstTimeUsage?: boolean;
+            commandUsedAtLeastOnce?: boolean;
             script: string;
         };
         isDevMode?: boolean;
@@ -15,13 +15,6 @@ declare const blocks: {
             packageConfigFilePath?: string;
         }) => void;
     };
-    command: {
-        script: {
-            full: string;
-            short: string;
-        };
-        get: () => string | undefined;
-    };
     cli: {
         package: {
             script: {
@@ -29,6 +22,25 @@ declare const blocks: {
                 prod: string;
             };
         };
+        inquire: {
+            true: ({ settings }: {
+                settings: Config | Record<string, never>;
+                config?: Config | Record<string, never>;
+            }) => void;
+            false: {
+                config: {
+                    create: ({ settings }: {
+                        settings: Config | Record<string, never>;
+                    }) => void;
+                    update: ({ settings }: {
+                        settings: Config | Record<string, never>;
+                    }) => void;
+                };
+            };
+        };
+        run: ({ settings }: {
+            settings: Config | Record<string, never>;
+        }) => void;
         config: {
             set: ({ settings }: {
                 settings: Config | Record<string, never>;

@@ -3,6 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.folder = void 0;
 const fs_1 = require("fs");
 const folder = {
+    create: ({ folderPath }) => {
+        (0, fs_1.mkdirSync)(folderPath, { recursive: true });
+        return;
+    },
     content: {
         /* ---------------------------------------------------
             Returns: Array of strings
@@ -10,13 +14,8 @@ const folder = {
             folder supplied
         ----------------------------------------------------*/
         list: ({ targetFolder }) => {
-            try {
-                const folderContent = (0, fs_1.readdirSync)(targetFolder);
-                return folderContent;
-            }
-            catch (err) {
-                throw err;
-            }
+            const folderContent = (0, fs_1.readdirSync)(targetFolder);
+            return folderContent;
         },
         /* -----------------------------------------------------
             Returns: boolean

@@ -1,6 +1,10 @@
-import { readdirSync } from 'fs';
+import { mkdirSync, readdirSync } from 'fs';
 
 const folder = {
+  create: ({ folderPath }: { folderPath: string }) => {
+    mkdirSync(folderPath, { recursive: true });
+    return;
+  },
   content: {
         /* ---------------------------------------------------
             Returns: Array of strings
@@ -8,12 +12,8 @@ const folder = {
             folder supplied
         ----------------------------------------------------*/
         list: ({ targetFolder }: { targetFolder: string }) => {
-            try {
-              const folderContent: string[] = readdirSync(targetFolder);
-              return folderContent;
-            } catch (err) {
-              throw err;
-            }
+          const folderContent: string[] = readdirSync(targetFolder);
+          return folderContent;
       },
         /* -----------------------------------------------------
             Returns: boolean

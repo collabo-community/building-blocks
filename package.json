@@ -2,7 +2,7 @@
   "name": "@collabo-community/building-blocks",
   "version": "0.0.0",
   "description": "The Building blocks framework repos is a collection of libraries and/or ideas, built to help achieve a predictable, structured and perfomant style of writing code. The ideology behind building blocks is also being developed to include non-code settings.",
-  "main": "@blocksTS/index.ts",
+  "main": "@blocksTS/index.js",
   "types": "@blocksTS/index.d.ts",
   "files": [],
   "scripts": {
@@ -10,6 +10,9 @@
     "blocks:ts:npx": "npx tsc",
     "blocks:ts:clean": "del-cli @blocksTS index.js index.d.ts",
     "blocks:ts:build": "npm-run-all --sequential blocks:ts:clean blocks:ts:npx"
+  },
+  "dependencies": {
+    "arg": "^5.0.2"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

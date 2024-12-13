@@ -77,7 +77,7 @@ const blocks = {
     //----------------------------------------------------------------------
     cli: {
         package: {
-            script: {
+            buildScript: {
                 blocks: {
                     dev: 'blocks:dev:dist',
                     prod: 'blocks:prod:build',
@@ -117,7 +117,7 @@ const blocks = {
                     appendText,
                 });
             },
-            set: (_a) => __awaiter(void 0, [_a], void 0, function* ({ env }) {
+            setAndRunBuildScripts: (_a) => __awaiter(void 0, [_a], void 0, function* ({ env }) {
                 const npmLifeCycleEvent = env.npm_lifecycle_event;
                 let settings = {
                     cli: {
@@ -129,12 +129,12 @@ const blocks = {
                     }
                 };
                 const createConfig = ({ content, script }) => {
-                    const packageScript = content.cli.custom.command ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.other.dev;
+                    const packageScript = content.cli.custom.command ? blocks.cli.package.buildScript.blocks.dev : blocks.cli.package.buildScript.other.dev;
                     content.cli.isInDevMode = script === packageScript;
                     blocks.cli.config.create({ content });
                 };
                 const updateConfig = ({ content, script }) => {
-                    const packageScript = content.cli.custom.command ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.other.dev;
+                    const packageScript = content.cli.custom.command ? blocks.cli.package.buildScript.blocks.dev : blocks.cli.package.buildScript.other.dev;
                     content.cli.isInDevMode = script === packageScript;
                     blocks.cli.config.update({ content });
                 };
@@ -142,10 +142,10 @@ const blocks = {
                     if (!configFilesExist) {
                         //----------------------------------------------
                         prettify_1.log.warning('Using Math to random to simulate user\'s choice from inquirer');
-                        const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.blocks.prod;
+                        const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.buildScript.blocks.dev : blocks.cli.package.buildScript.blocks.prod;
                         settings.cli.custom.script = usersScriptChoice;
                         //----------------------------------------------
-                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.script.blocks.dev || npmLifeCycleEvent === blocks.cli.package.script.blocks.prod;
+                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.dev || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.prod;
                         settings.cli.custom.commandUsedAtLeastOnce = true;
                         //----------------------------------------------
                         const npmRunBlocksPackageScript = usersScriptChoice.replace('blocks:', 'blocks:cli:');
@@ -159,12 +159,12 @@ const blocks = {
                         const { default: config } = yield Promise.resolve(`${resolvedPath.file.js}`).then(s => __importStar(require(s)));
                         //--------------------
                         settings = config;
-                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.script.blocks.dev || npmLifeCycleEvent === blocks.cli.package.script.blocks.prod;
+                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.dev || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.prod;
                         //--------------------
                         if (!settings.cli.custom.commandUsedAtLeastOnce) {
                             //----------------------------------------------
                             prettify_1.log.warning('Using Math to random to simulate user\'s choice from inquirer');
-                            const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.blocks.prod;
+                            const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.buildScript.blocks.dev : blocks.cli.package.buildScript.blocks.prod;
                             settings.cli.custom.script = usersScriptChoice;
                             //----------------------------------------------
                             settings.cli.custom.commandUsedAtLeastOnce = true;
@@ -187,7 +187,7 @@ const blocks = {
                         //--------------------
                         settings = config;
                         //--------------------
-                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.script.blocks.dev || npmLifeCycleEvent === blocks.cli.package.script.blocks.prod;
+                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.dev || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.prod;
                         updateConfig({ content: settings, script: npmLifeCycleEvent });
                     }
                 }

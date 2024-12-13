@@ -44,7 +44,7 @@ const blocks = {
     //----------------------------------------------------------------------
     cli: {
         package: {
-            script: {
+            buildScript: {
                 blocks: {
                     dev: 'blocks:dev:dist',
                     prod: 'blocks:prod:build',
@@ -84,7 +84,7 @@ const blocks = {
                     appendText,
                 });
             },
-            set: async ({ env }: { env: NodeJS.ProcessEnv }) => {
+            setAndRunBuildScripts: async ({ env }: { env: NodeJS.ProcessEnv }) => {
                 const npmLifeCycleEvent = env.npm_lifecycle_event;
                 let settings: Config | Record<string, never> = {
                     cli: {
@@ -96,13 +96,13 @@ const blocks = {
                     }
                 }
                 const createConfig = ({ content, script }: { content: Config | Record<string, never>; script: string | undefined }) => {
-                    const packageScript = content.cli.custom.command ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.other.dev;
+                    const packageScript = content.cli.custom.command ? blocks.cli.package.buildScript.blocks.dev : blocks.cli.package.buildScript.other.dev;
                     content.cli.isInDevMode = script === packageScript;
                     blocks.cli.config.create({ content });
                 }
 
                 const updateConfig = ({ content, script }: { content: Config | Record<string, never>; script: string | undefined }) => {
-                    const packageScript = content.cli.custom.command ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.other.dev;
+                    const packageScript = content.cli.custom.command ? blocks.cli.package.buildScript.blocks.dev : blocks.cli.package.buildScript.other.dev;
                     content.cli.isInDevMode = script === packageScript;
                     blocks.cli.config.update({ content });
                 }
@@ -111,10 +111,10 @@ const blocks = {
                     if (!configFilesExist) {
                         //----------------------------------------------
                         log.warning('Using Math to random to simulate user\'s choice from inquirer');
-                        const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.blocks.prod;
+                        const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.buildScript.blocks.dev : blocks.cli.package.buildScript.blocks.prod;
                         settings.cli.custom.script = usersScriptChoice;
                         //----------------------------------------------
-                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.script.blocks.dev || npmLifeCycleEvent === blocks.cli.package.script.blocks.prod;
+                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.dev || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.prod;
                         settings.cli.custom.commandUsedAtLeastOnce = true;
                         //----------------------------------------------
                         const npmRunBlocksPackageScript = usersScriptChoice.replace('blocks:', 'blocks:cli:');
@@ -127,12 +127,12 @@ const blocks = {
                         const { default: config } = await import(resolvedPath.file.js);
                         //--------------------
                         settings = config;
-                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.script.blocks.dev || npmLifeCycleEvent === blocks.cli.package.script.blocks.prod;
+                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.dev || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.prod;
                         //--------------------
                         if (!settings.cli.custom.commandUsedAtLeastOnce) {
                             //----------------------------------------------
                             log.warning('Using Math to random to simulate user\'s choice from inquirer');
-                            const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.script.blocks.dev : blocks.cli.package.script.blocks.prod;
+                            const usersScriptChoice = Math.random() < 0.5 ? blocks.cli.package.buildScript.blocks.dev : blocks.cli.package.buildScript.blocks.prod;
                             settings.cli.custom.script = usersScriptChoice;
                             //----------------------------------------------
                             settings.cli.custom.commandUsedAtLeastOnce = true;
@@ -156,7 +156,7 @@ const blocks = {
                         //--------------------
                         settings = config;
                         //--------------------
-                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.script.blocks.dev || npmLifeCycleEvent === blocks.cli.package.script.blocks.prod;
+                        settings.cli.custom.command = npmLifeCycleEvent === undefined || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.dev || npmLifeCycleEvent === blocks.cli.package.buildScript.blocks.prod;
                         updateConfig({ content: settings, script: npmLifeCycleEvent });
                     }
                 }

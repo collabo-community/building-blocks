@@ -17,7 +17,7 @@ declare const blocks: {
     };
     cli: {
         package: {
-            script: {
+            buildScript: {
                 blocks: {
                     dev: string;
                     prod: string;
@@ -35,7 +35,7 @@ declare const blocks: {
             update: ({ content }: {
                 content: Config | Record<string, never>;
             }) => void;
-            set: ({ env }: {
+            setAndRunBuildScripts: ({ env }: {
                 env: NodeJS.ProcessEnv;
             }) => Promise<void>;
         };

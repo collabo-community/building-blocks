@@ -29,6 +29,9 @@ declare const blocks: {
             };
         };
         config: {
+            get: ({ env }: {
+                env: NodeJS.ProcessEnv;
+            }) => Promise<any>;
             create: ({ content }: {
                 content: Config | Record<string, never>;
             }) => void;

@@ -56,6 +56,15 @@ const blocks = {
             },
         },
         config: {
+            get: async ({ env }: { env: NodeJS.ProcessEnv }) => {
+                try {
+                    const { default: config } = await import(resolvedPath.file.js);
+                    return config;
+                } catch(err) {
+                    blocks.cli.config.setAndRunBuildScripts({ env }); // promisfy/await
+                    log.warning('Finished building!'); 
+                }
+            },
             create: ({ content }: { content: Config | Record<string, never> }) => {
                 // console.log('from folder/file create func(): ', content);
                 // console.log('from folder/file create func(): ', content.cli.custom);

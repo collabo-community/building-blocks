@@ -89,6 +89,16 @@ const blocks = {
             },
         },
         config: {
+            get: (_a) => __awaiter(void 0, [_a], void 0, function* ({ env }) {
+                try {
+                    const { default: config } = yield Promise.resolve(`${resolvedPath.file.js}`).then(s => __importStar(require(s)));
+                    return config;
+                }
+                catch (err) {
+                    blocks.cli.config.setAndRunBuildScripts({ env }); // promisfy/await
+                    prettify_1.log.warning('Finished building!');
+                }
+            }),
             create: ({ content }) => {
                 // console.log('from folder/file create func(): ', content);
                 // console.log('from folder/file create func(): ', content.cli.custom);
